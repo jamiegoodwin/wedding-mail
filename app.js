@@ -1,30 +1,56 @@
-//We're using the express framework and the mailgun-js wrapper
-var request = require('request');
-//Your api key, from Mailgun’s Control Panel
-var api_key = 'key-3ac9d8ce2b531334c715e3bc22d60713';
-//Your domain, from the Mailgun Control Panel
-var domain = 'jamiegoodwin.uk';
-//Your sending email address
-var from_who = 'me@jamiegoodwin.uk';
-// API URL
-var base_url = 'https://api.mailgun.net/v3/jamiegoodwin.uk/messages';
+// Modules
+const request = require('request');
+const app = require('express')();
+const bodyParser = require('body-parser');
+require('dotenv').config();
 
-// Mailgun data
-var mgd = {
-    from: from_who,
-    to: 'me@jamiegoodwin.uk',
-    subject: 'A new guest has confirmed their attendance!',
-    text: 'A new guest has confirmed their attendance!'
+// Settings
+const port = process.env.PORT;
+
+// Mailgun
+const api_key = process.env.MAILGUN_API;
+const domain = 'jamiegoodwin.uk';
+const base_url = 'https://api.mailgun.net/v3/jamiegoodwin.uk/messages';
+
+// Process JSON
+app.use(bodyParser.json()); 
+
+function rsvp($name, $email) {
+    // Mailgun data
+    const mgd = {
+        from: $email,
+        to: process.env.SEND_TO,
+        subject: $name + ' confirmed their attendance!',
+        text: ':-)'
+    }
+
+    // Email J&K
+    request.post({
+        url: base_url,
+        form: mgd,
+        auth: {
+            user: 'api',
+            password: api_key
+        }
+    }, function (error, response, body) {
+        console.log('error:', error);
+        console.log('statusCode:', response && response.statusCode);
+        console.log('body:', body);
+    });
+
+    // Email RSVPer
+
+    // Add to Mailgun list?
 }
 
-request.get({
-    url: base_url,
-    form: mgd,
-    auth: {
-        api: api_key
-    }
-}, function (error, response, body) {
-    console.log('error:', error);
-    console.log('statusCode:', response && response.statusCode);
-    console.log('body:', body);
+app.post('/', function (req, res) {
+    const name = req.body.name;
+    const email = req.body.email;
+
+    // Send RSVP
+    rsvp(name, email);
+
+    res.send('1');
 });
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
