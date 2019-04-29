@@ -2,6 +2,7 @@
 const request = require('request');
 const app = require('express')();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 require('dotenv').config();
 
 // Settings
@@ -9,19 +10,22 @@ const port = process.env.PORT;
 
 // Mailgun
 const api_key = process.env.MAILGUN_API;
-const domain = 'jamiegoodwin.uk';
 const base_url = 'https://api.mailgun.net/v3/jamiegoodwin.uk/messages';
 
-// Process JSON
-app.use(bodyParser.json()); 
+// Set up app
+app.use(bodyParser.json());
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
 
-function rsvp($name, $email) {
+function rsvp($name, $email, $yurt, $res) {
     // Mailgun data
     const mgd = {
-        from: $email,
-        to: process.env.SEND_TO,
-        subject: $name + ' confirmed their attendance!',
-        text: ':-)'
+        from: process.env.SEND_TO,
+        to: $email,
+        bcc: process.env.SEND_TO,
+        subject: $name + ' , you\'re coming to the wedding!',
+        text: 'Thanks for letting us know. We\'ve got a copy of this email to confirm.\n\nIf you need anything, reply to this email or text/call us:\n\nJamie: 07792 946 868\nKristina: 07714 083 465\n\nYurt? ' + $yurt
     }
 
     // Email J&K
@@ -36,21 +40,22 @@ function rsvp($name, $email) {
         console.log('error:', error);
         console.log('statusCode:', response && response.statusCode);
         console.log('body:', body);
+
+        respond($res, response.statusCode);
     });
+}
 
-    // Email RSVPer
-
-    // Add to Mailgun list?
+function respond($res, $status) {
+    $res.sendStatus($status);
 }
 
 app.post('/', function (req, res) {
     const name = req.body.name;
     const email = req.body.email;
+    const yurt = (req.body.yurt == "on") ? "Yes please!" : "Nope.";
 
     // Send RSVP
-    rsvp(name, email);
-
-    res.send('1');
+    rsvp(name, email, yurt, res);
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Listening on port ${port}!`))
