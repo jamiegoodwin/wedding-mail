@@ -15,15 +15,14 @@ const base_url = 'https://api.mailgun.net/v3/jamiegoodwin.uk/messages';
 // Set up app
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'http://localhost:3000'
+    origin: 'https://evawin.uk/'
 }));
 
 function rsvp($name, $email, $yurt, $res) {
     // Mailgun data
     const mgd = {
         from: 'Jamie & Kristina <me@jamiegoodwin.uk>',
-        to: $email,
-        bcc: process.env.SEND_TO,
+        to: $email + ", " + process.env.SEND_TO,
         subject: $name + ' , you\'re coming to the wedding!',
         text: 'Thanks for letting us know. We\'ve got a copy of this email to confirm.\n\nIf you need anything, reply to this email or text/call us:\n\nJamie: 07792 946 868\nKristina: 07714 083 465\n\nYurt? ' + $yurt
     }
