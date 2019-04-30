@@ -5,9 +5,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
 
-// Settings
-const port = process.env.PORT;
-
 // Mailgun
 const api_key = process.env.MAILGUN_API;
 const base_url = 'https://api.mailgun.net/v3/jamiegoodwin.uk/messages';
@@ -57,4 +54,4 @@ app.post('/', function (req, res) {
     rsvp(name, email, yurt, res);
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}!`))
+app.listen();
