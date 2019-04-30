@@ -12,7 +12,7 @@ const base_url = 'https://api.mailgun.net/v3/jamiegoodwin.uk/messages';
 // Set up app
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'https://evawin.uk/'
+    origin: 'https://evawin.uk'
 }));
 
 function rsvp($name, $email, $yurt, $res) {
