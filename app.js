@@ -21,7 +21,7 @@ app.use(cors({
 function rsvp($name, $email, $yurt, $res) {
     // Mailgun data
     const mgd = {
-        from: process.env.SEND_TO,
+        from: 'Jamie & Kristina <me@jamiegoodwin.uk>',
         to: $email,
         bcc: process.env.SEND_TO,
         subject: $name + ' , you\'re coming to the wedding!',
